@@ -25,25 +25,31 @@ document.querySelector('.form').addEventListener('submit', function (event) {
   const step = parseInt(event.target.step.value); // Крок збільшення затримки
   const amount = parseInt(event.target.amount.value); // Кількість промісів
 
-  // Оголошуємо функцію, яка буде рекурсивно викликати createPromise
-  function processPromise(position) {
-    if (position <= amount) {
-      const delay = startingDelay + (position - 1) * step;
-      createPromise(position, delay)
-        .then(result => {
-          console.log(
-            `✅ Fulfilled promise ${result.position} in ${result.delay}ms`
-          );
-          processPromise(position + 1); // Виклик для наступного промісу
-        })
-        .catch(error => {
-          console.log(
-            `❌ Rejected promise ${error.position} in ${error.delay}ms`
-          );
-          processPromise(position + 1); // Виклик для наступного промісу
-        });
+  // Перевырка на пустоту
+  if (startingDelay > 0 && step > 0 && amount > 0) {
+    // Оголошуємо функцію, яка буде рекурсивно викликати createPromise
+    function processPromise(position) {
+      if (position <= amount) {
+        const delay = startingDelay + (position - 1) * step;
+        createPromise(position, delay)
+          .then(result => {
+            console.log(
+              `✅ Fulfilled promise ${result.position} in ${result.delay}ms`
+            );
+            processPromise(position + 1); // Виклик для наступного промісу
+          })
+          .catch(error => {
+            console.log(
+              `❌ Rejected promise ${error.position} in ${error.delay}ms`
+            );
+            processPromise(position + 1); // Виклик для наступного промісу
+          });
+      }
     }
-  }
 
-  processPromise(1); // Виклик першого промісу
+    // Виклик першого промісу
+    processPromise(1);
+  } else {
+    console.log('Запус не можливий з мінусовими значеннями');
+  }
 });
